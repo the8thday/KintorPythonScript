@@ -15,7 +15,8 @@ profiling <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/Kintor-myc
 group_info <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/Kintor-myc_Protac-质谱检测结果-20210812.xlsx',
                                 sheet='sample_info')
 
-# tfre <- profiling
+profiling <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/MYC_profiling.xlsx')
+tfre <- profiling
 tfre_df <- tfre %>%
   select(process_code, gene_id, gene_symbol, ifot) %>%
   pivot_wider(names_from = process_code, values_from = ifot)
@@ -103,10 +104,10 @@ ggsave(plot = p, filename = file.path(path, glue::glue('{cohert}_volcano.pdf')),
 p2 <- ggplot(df_p, aes(x = baseMean, y = log2_FC, color = label)) +
   geom_point(size = 2) +
   scale_colour_manual(values  = c("#B31B21", "#1465AC", "darkgray"), limits = c('up', 'down', 'noSig')) +
-theme(panel.grid.major = element_line(color = 'gray', size = 0.2),
+  theme(panel.grid.major = element_line(color = 'gray', size = 0.2),
       panel.background = element_rect(color = 'black', fill = 'transparent'),
       legend.key = element_rect(fill = 'transparent'), legend.position = 'top') +
-labs(x = '\nLog2 Mean Expression', y = 'Log2 Fold Change\n', color = '') +
+  labs(x = '\nLog2 Mean Expression', y = 'Log2 Fold Change\n', color = '') +
   geom_hline(yintercept = c(0, -log2(2), log2(2)), linetype = c(1, 2, 2),
                color = c("black", "black", "black")) +
   ggrepel::geom_text_repel(data = bind_rows(top10_up, top10_down), aes(x = baseMean, y = log2_FC,
