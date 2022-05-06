@@ -1,1 +1,4 @@
-## this project is all about data science
+## This project is a repertoire of python script in Kintor
+
+
+notebooks: jupyter notebook
