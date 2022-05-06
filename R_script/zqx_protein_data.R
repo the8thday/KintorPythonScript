@@ -15,7 +15,7 @@ profiling <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/Kintor-myc
 group_info <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/Kintor-myc_Protac-质谱检测结果-20210812.xlsx',
                                 sheet='sample_info')
 
-profiling <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/MYC_profiling.xlsx')
+# profiling <- readxl::read_excel('/Users/congliu/OneDrive/kintor/qianx/MYC_profiling.xlsx')
 tfre <- profiling
 tfre_df <- tfre %>%
   select(process_code, gene_id, gene_symbol, ifot) %>%
@@ -24,7 +24,7 @@ tfre_df <- tfre %>%
 # get id, 注意修改不同的sheet
 cohert <- 'TFRE_3nm'
 path <- '/Users/congliu/OneDrive/kintor/qianx/drop_na'
-group_id <- group_info %>% filter(methods=='TFRE') %>%
+group_id <- group_info %>% filter(methods=='profiling') %>%
   filter(cellProcess %in% c('ctrl','3nM')) %>% pull(processcode)
 
 tfre_1 <- tfre_df %>%
