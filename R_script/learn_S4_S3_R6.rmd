@@ -1,0 +1,55 @@
+---
+title: "R's Object-oriented programming"
+output: html_document
+---
+
+主要记录S4和R6的一些用法。
+因为S语言的缘故，object一词在R中所代表的意思需要注意一下下。比如class函数只能用于OOB，对于base objects不适用， 选择`sloop::otype`更为合适。
+
+```{r}
+library(methods)
+library(sloop)
+```
+
+```{r}
+# define class
+setClass(Class = 'Person',
+         slots = c(
+           name = 'character',
+           age = 'numeric'
+         ),
+         prototype = c(
+           name = 'NA_character_',
+           age = 'NA_real_'
+         )
+)
+
+setValidity("Person", function(object) {
+  if (length(object@name) != length(object@age)) {
+    "@name and @age must be same length"
+  } else {
+    TRUE
+  }
+  })
+
+setGeneric("name", function() standardGeneric("name"))
+setMethod("name", "Person", function(x) x@name)
+
+name(john)
+
+# insistance
+john <- new("Person", name = "John Smith", age = NA_real_)
+
+
+```
+
+generic 是什么意思？在R语言中，OOP主要的目的是多态的应用，其所采用的S3，S4类为functional OOP，采用的即为generic functions。
+RC是封装似OOP系统。
+
+```{r}
+# check object type
+foo <- lubridate::period(second = 90, minute = 5)
+sloop::otype(foo)
+is(foo) # class
+str(foo)
+```
