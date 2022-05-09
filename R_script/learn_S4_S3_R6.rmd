@@ -6,6 +6,7 @@ output: html_document
 主要记录S4和R6的一些用法。
 因为S语言的缘故，object一词在R中所代表的意思需要注意一下下。比如class函数只能用于OOB，对于base objects不适用， 选择`sloop::otype`更为合适。
 
+
 ```{r}
 library(methods)
 library(sloop)
@@ -45,6 +46,7 @@ john <- new("Person", name = "John Smith", age = NA_real_)
 
 generic 是什么意思？在R语言中，OOP主要的目的是多态的应用，其所采用的S3，S4类为functional OOP，采用的即为generic functions。
 RC是封装似OOP系统。
+The generic is a middleman: its job is to define the interface (i.e. the arguments) then find the right implementation for the job. The implementation for a specific class is called a method, and the generic finds that method by performing method dispatch.
 
 ```{r}
 # check object type
@@ -52,4 +54,25 @@ foo <- lubridate::period(second = 90, minute = 5)
 sloop::otype(foo)
 is(foo) # class
 str(foo)
+```
+
+S3类的特殊之处在于其定义上将class设定为一种属性，具有class attribution的即为S3类，一般可用structure实现。S3类一般建立在base  type的基础之上。
+如以下代码：
+```{r}
+new_difftime <- function(x = double(), units = "secs") {
+  stopifnot(is.double(x))
+  units <- match.arg(units, c("secs", "mins", "hours", "days", "weeks"))
+
+  structure(x,
+    class = "difftime",
+    units = units
+  )
+}
+
+new_difftime(c(1, 10, 3600), "secs")
+#> Time differences in secs
+#> [1]    1   10 3600
+new_difftime(52, "weeks")
+#> Time difference of 52 weeks
+
 ```
