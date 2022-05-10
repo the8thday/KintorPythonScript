@@ -1,0 +1,85 @@
+---
+title: "Advanced R"
+output: html_document
+---
+
+记录以及整理Advanced R阅读中的一些知识点，加深记忆以及具有初步的实操练习。
+
+### Metaprogramming
+元编程是指对Code的编程。
+```{r}
+library(tidyverse)
+library(rlang)
+library(lobstr)
+```
+
+```{r}
+cv <- function(var) {
+  var <- enexpr(var)
+  expr(sd(!!var) / mean(!!var))
+}
+
+cv(x)
+cv(x + y)
+cv(c(2,3,4))
+```
+Expression表达式的作用是一种对代码的保存，类似的操作在Python中也有。constant scalars, symbols, call objects, and pairlists, 也被成为抽象语法树（*abstract syntax trees*）
+
+下面是evaluation：
+```{r}
+base::eval(cv(c(2,3,4)))
+```
+
+`dplyr`在处理数据库数据时所采用的SQL语句，既是以Expression+evaluation+env的形式实现的。
+```{r}
+# 实现 data mask
+# rlang::eval_tidy()
+
+df <- data.frame(x = 1:5, y = sample(5))
+eval_tidy(expr(x + y), df)
+
+```
+```{r}
+
+```
+
+
+通过对第17章的学习，可以看出元编程和类的用法，在R开发中似乎也不是常用的。
+```{r}
+
+```
+
+
+### Chapter2 Names & values
+
+copy on modify
+```{r}
+# 在R中创建一个对象和命名, 如下所示只有一个object
+# 这种内存地址的方式对于列表的copy和Python有些类似
+
+x <- y <- c(1,2,3)
+obj_address(y)
+
+# copy on modify
+y[[3]] <- 4
+obj_address(y)
+
+# function
+f <- function (a) a
+obj_address(f(x))
+
+# list
+# list的不同之处在于其所指向的是reference
+l1 <- list(1, 2, 3)
+obj_address(l1)
+l2 <- l1
+obj_address(l2)
+l2[[3]] <- 4
+lobstr::ref(l1,l2)
+
+# dataframe
+# 行列的操作竟然是不同的
+
+
+```
+
