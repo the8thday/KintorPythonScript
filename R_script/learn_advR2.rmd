@@ -13,6 +13,7 @@ library(rlang)
 library(lobstr)
 ```
 
+`expr`和`enexpr`分别在function内外捕获表达式的形式。
 ```{r}
 cv <- function(var) {
   var <- enexpr(var)
@@ -82,4 +83,123 @@ lobstr::ref(l1,l2)
 
 
 ```
+
+
+
+### Chapter3 Vectors
+
+向量是R中重要的数据格式。原子向量总是包含同样的元素。
+`structure`函数可以用来添加属性，这里的属性不同于Python中类的属性。
+```{r}
+a <- 1:3
+attr(a, 'foo') <- 'bar'
+str(a)
+
+# equal
+a <- structure(1:3, foo = 'bar')
+str(a)
+
+# 在base type基础上增加属性后所得到的几种结构
+foo <- factor(c('a', 'b', 'b', 'c'))
+attributes(foo)
+typeof(foo) # factor是在integer vector的基础上built的
+
+```
+*Having a class attribute turns an object into an S3 object, which means it will behave differently from a regular vector when passed to a generic function*
+
+
+### Subsetting
+
+对于matrices的索引，和对于atomic vector的索引方式是一样的。在索引时如想保存数据本来的维度信息，将drop=FALSE
+对于dataframe，`]`等的索引在单一索引时会变成vector，既失去维度，这里经常在索引时加上drop=FALSE会是一个好习惯。
+```{r}
+df <- data.frame(a = 1:2, b = 1:2)
+str(df[, "a"])
+message(paste0(c('# ',rep('-', 20)), collapse = ''))
+
+str(df[, "a", drop = FALSE])
+```
+
+在对list取具体某个元素时，`]]`和`$`的差别在于`$`符号竟然可以partial match
+```{r}
+x <- list(abc = 1, foo = c(1,2,3))
+x$abc
+x$ab
+
+options(warnPartialMatchDollar = TRUE)
+x$ab
+```
+在对atomic vector 和list进行subset时，是复制到了新的内存吗？
+
+在subsetting & assignemnt中，还有一个重要的应用，就如同在subset时增加参数drop=FALSE以保证原来的数据结构一样，如下可以保持数据原来的结构：
+```{r}
+# 空索引，在索引时[]空索引返回对象自身
+mtcars[] <- lapply(mtcars, as.integer) # 在as的用法中也有一些需要注意的点，比如is.vector的用法容易出现一些小问题
+is.data.frame(mtcars)
+class(mtcars)
+
+mtcars <- lapply(mtcars, as.integer)
+is.data.frame(mtcars)
+class(mtcars)
+
+```
+在boolean索引中，符号`& |`和`&& ||`的差别在于前者是向量化的操作，后者在`if`中使用的多一些。
+
+
+### Control flow
+if只能handle`TRUE FALSE`, 但是ifelse可以是向量化的。
+```{r}
+x <- 1:10
+ifelse(x %% 5 == 0, "XXX", as.character(x))
+
+ifelse(x %% 2 == 0, "even", "odd")
+
+```
+
+`switch`的用法就是替换一连串的`if()else()`
+```{r}
+x_option <- function(x) {
+  if (x == "a") {
+    "option 1"
+  } else if (x == "b") {
+    "option 2"
+  } else if (x == "c") {
+    "option 3"
+  } else {
+    stop("Invalid `x` value")
+  }
+}
+# 以上等于以下的操作, 但是注意abc字符串没有引号, 且The last component of a switch() should always throw an error, otherwise unmatched inputs will invisibly return NULL
+x_option <- function(x) {
+  switch(x,
+    a = "option 1",
+    b = "option 2",
+    c = "option 3",
+    stop("Invalid `x` value")
+  )
+}
+x_option('a')
+
+
+# switch 的 fall through用法是个小trick
+legs <- function(x) {
+  switch(x,
+    cow = ,
+    horse = ,
+    dog = 4,
+    human = ,
+    chicken = 2,
+    plant = 0,
+    stop("Unknown input")
+  )
+}
+legs("cow")
+legs("dog")
+
+```
+
+
+### Environment
+The environment is the data structure that powers scoping.
+环境也是一种数据结构。
 
