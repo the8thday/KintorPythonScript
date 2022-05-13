@@ -76,3 +76,4 @@ new_difftime(52, "weeks")
 #> Time difference of 52 weeks
 
 ```
+整体上来看，对于R developer而言，S3也不会是一个常用的选择。对于R user就更显的不是很常用了。S4在bioconductor项目的广泛使用还是值得关注的。
